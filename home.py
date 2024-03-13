@@ -25,7 +25,7 @@ from rlgym.utils.reward_functions import CombinedReward
 import numpy as np
 
 from rlgym.envs import Match
-from rlgym_tools.sb3_utils import SB3MultipleInstanceEnv
+#from rlgym_tools.sb3_utils import SB3MultipleInstanceEnv
 
 from rlgym.utils.state_setters import DefaultState
 from rlgym.utils.action_parsers import DefaultAction
@@ -71,6 +71,30 @@ def get_match():
 #            action_parser=DefaultAction()
 #    )
 
+def test():
+
+    env = rlgym.make(game_speed=1,obs_builder=AdvancedObs())
+    model = stable_baselines3.PPO.load(
+        "models/3_1e6+2.5e6+6.5e6+4.6e6_rl_model_7250000_steps.zip",
+        env,
+        device="auto"
+    )
+
+    print("Model loaded")
+
+    while True:
+        obs = env.reset()
+        done = False
+
+        while not done:
+            action = model.predict(obs)
+            #print("MODELE: ",action)
+            #action = env.action_space.sample()
+            action  = action[0]
+
+            next_obs, reward, done, gameinfo = env.step(action)
+            obs = next_obs
+
 if __name__ == "__main__":
     #env  = SB3MultipleInstanceEnv(match_func_or_matches=get_match, num_instances=1, wait_time=30)
    #learner = PPO(policy="MlpPolicy", env=env, verbose=1)
@@ -80,6 +104,8 @@ if __name__ == "__main__":
 #max_steps = int(round(ep_len_seconds * physics_ticks_per_second / default_tick_skip))
 
 #terminal_conditions=[TimeoutCondition(fps * 300), NoTouchTimeoutCondition(fps * 45), GoalScoredCondition()],
+
+    #test()
 
     env = rlgym.make(
     #spawn_opponents=True,
@@ -108,7 +134,7 @@ if __name__ == "__main__":
 
     try:
         model = stable_baselines3.PPO.load(
-            "models/test_exit_save.zip",
+            "models/3_1e6+2.5e6+6.5e6+4.6e6_rl_model_7250000_steps",
             env,
             device="auto"
         )
@@ -125,13 +151,13 @@ if __name__ == "__main__":
         device="auto"
     )
 #
-    print("Creating new model")
+        print("Creating new model")
 #
-    callback = CheckpointCallback(round(50_000), save_path="models", name_prefix="3_rl_model")
+    callback = CheckpointCallback(round(100_000), save_path="models", name_prefix="3_1e6+2.5e6+6.5e6+4.6e6+7.25e6__rl_model")
     #print(terminal_conditions)
     #model.learn(total_timesteps=int(1e6))
 #
-    model.learn(total_timesteps=int(1e6),callback=callback)
+    model.learn(total_timesteps=int(25e6),callback=callback)
     model.save("models/test_exit_save")
     #print("testzdpfzdfiodfoeijgfzkjgflfkejglmfkjmlzkgjmflkzjfglkjelfkmgjelmkfjgmlekzfjgmlzkjefg")
 #
